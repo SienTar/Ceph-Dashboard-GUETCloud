@@ -82,7 +82,6 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "health", "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')   #return tuple (int ret, string outbuf, string outs)
         health = json.loads(result[1])
@@ -95,7 +94,6 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "health", "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
@@ -107,36 +105,35 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "crash ls", "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
 
-    def get_crash_info(self, crash_id): # 未完成测试, 暂时没有可用的crash_id
+    def crash_info(self, id): # 部分完成测试, 因暂时没有可用的id, 目前为止无法测出返回值为0的结果
         '''
         查看某个崩溃信息
-        :param crash_id: string, 崩溃信息的ID, 如'2022-04-22T00:53:30.164344Z_ce493a00-60bf-4114-bb47-6246ebaa4237'
+        :param id: string, 崩溃信息的ID, 如'2022-04-22T00:53:30.164344Z_ce493a00-60bf-4114-bb47-6246ebaa4237'
         :return: json,(int ret, string outbuf, string outs)
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        if not isinstance(crash_id, string):
-            return TypeError("变量crash_id的类型错误, 应为string")
-        cmd = {"prefix": "crash info ", "crash_id": crash_id, "format": "json"}
+        if not isinstance(id, str):
+            return TypeError("变量id的类型错误, 应为string")
+        cmd = {"prefix": "crash info", "id": id, "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
     
-    def crash_archive(self, crash_id): # 未完成测试, 暂时没有可用的crash_id
+    def crash_archive(self, id): # 部分完成测试, 因暂时没有可用的id, 目前为止无法测出返回值为0的结果
         '''
         将某一个崩溃守护进程crash信息进行存档
-        :param crash_id: string, 崩溃信息的ID, 如'2022-04-22T00:53:30.164344Z_ce493a00-60bf-4114-bb47-6246ebaa4237'
+        :param id: string, 崩溃信息的ID, 如'2022-04-22T00:53:30.164344Z_ce493a00-60bf-4114-bb47-6246ebaa4237'
         :return: json, (int ret, string outbuf, string outs)
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        if not isinstance(crash_id, string):
-            return TypeError("变量crash_id的类型错误, 应为string")
-        cmd = {"prefix": "crash info ", "crash_id": crash_id, "format": "json"}
+        if not isinstance(id, str):
+            return TypeError("变量id的类型错误, 应为string")
+        cmd = {"prefix": "crash archive", "id": id, "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
     
@@ -147,12 +144,10 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "crash archive-all", "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
-        
-         
+    
     def get_pool_stats(self): # 已完成测试
         '''
         获取池的状态
@@ -160,7 +155,6 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "osd pool stats", "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
@@ -173,7 +167,6 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "pg stat", "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
@@ -185,7 +178,6 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "pg getmap", "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
@@ -235,7 +227,6 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "pg dump_pools_json", "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')
         return result
@@ -248,7 +239,6 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "pg dump_stuck", "format": "json"}
         if stuckops is not None:
             if not isinstance(stuckops, list):
@@ -355,7 +345,6 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        
         cmd = {"prefix": "pg ls", "format": "json"}
         if pool is not None:
             if not isinstance(pool, int):
@@ -919,83 +908,87 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
-    def osd_down(self, ids): # 未完成测试, 报错CephError
+    def osd_down(self, ids): # 已完成测试
         '''
         设置OSD down
-        :param ids: six.string_types
+        :param ids: list
         :return: json, (int ret, string outbuf, string outs)
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        if not isinstance(ids, six.string_types):
-            return TypeError("变量ids的类型错误, 应为six.string_types")
+        if not isinstance(ids, list):
+            return TypeError("变量ids的类型错误, 应为list")
         ids_validator = ceph_argparse.CephString(goodchars="")
-        ids_validator.valid(ids)
+        for s in ids:
+            ids_validator.valid(s)
         cmd = {"prefix": "osd down", "ids": ids, "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
-    def osd_out(self, ids): # 未完成测试, 报错CephError
+    def osd_out(self, ids): # 已完成测试
         '''
         设置OSD out
-        :param ids: six.string_types
+        :param ids: list
         :return: json, (int ret, string outbuf, string outs)
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        if not isinstance(ids, six.string_types):
-            return TypeError("变量ids的类型错误, 应为six.string_types")
+        if not isinstance(ids, list):
+            return TypeError("变量ids的类型错误, 应为list")
         ids_validator = ceph_argparse.CephString(goodchars="")
-        ids_validator.valid(ids)
+        for s in ids:
+            ids_validator.valid(s)
         cmd = {"prefix": "osd out", "ids": ids, "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
-    def osd_in(self, ids): # 未完成测试, 报错CephError
+    def osd_in(self, ids): # 已完成测试
         '''
         设置OSD in
-        :param ids: six.string_types
+        :param ids: list
         :return: json, (int ret, string outbuf, string outs)
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        if not isinstance(ids, six.string_types):
-            return TypeError("变量ids的类型错误, 应为six.string_types")
+        if not isinstance(ids, list):
+            return TypeError("变量ids的类型错误, 应为list")
         ids_validator = ceph_argparse.CephString(goodchars="")
-        ids_validator.valid(ids)
+        for s in ids:
+            ids_validator.valid(s)
         cmd = {"prefix": "osd in", "ids": ids, "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
-    def osd_rm(self, ids): # 未完成测试, 报错CephError
+    def osd_rm(self, ids): # 已完成测试
         '''
         设置OSD rm
-        :param ids: six.string_types
+        :param ids: list
         :return: json, (int ret, string outbuf, string outs)
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        if not isinstance(ids, six.string_types):
-            return TypeError("变量ids的类型错误, 应为six.string_types")
+        if not isinstance(ids, list):
+            return TypeError("变量ids的类型错误, 应为list")
         ids_validator = ceph_argparse.CephString(goodchars="")
-        ids_validator.valid(ids)
+        for s in ids:
+            ids_validator.valid(s)
         cmd = {"prefix": "osd rm", "ids": ids, "format": "json"}
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
-    def osd_reweight(self, id, weight): # 未完成测试, 报错CephError
+    def osd_reweight(self, id, weight): # 已完成测试
         '''
         设置OSD reweight
-        :param id: six.string_types
+        :param id: int
         :param weight: float
         :return: json, (int ret, string outbuf, string outs)
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        if not isinstance(id, six.string_types):
-            return TypeError("变量id的类型错误, 应为six.string_types")
-        ids_validator = ceph_argparse.CephString(goodchars="")
-        ids_validator.valid(id)
+        if not isinstance(id, int):
+            return TypeError("变量id的类型错误, 应为int")
+        id_validator = ceph_argparse.CephInt(range='0')
+        id_validator.valid(str(id))
         if not isinstance(weight, float):
             return TypeError("变量weight的类型错误, 应为float")
         weight_validator = ceph_argparse.CephFloat(range='0|1')
@@ -1004,20 +997,19 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
-    def osd_primary_affinity(self, id, weight): # 未完成测试, 报错CephError
+    def osd_primary_affinity(self, id, weight): # 已完成测试
         '''
         设置OSD primary_affinity
-        
-        :param id: six.string_types
+        :param id: int
         :param weight: float
         :return: json, (int ret, string outbuf, string outs)
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: Rados引起的问题描述
         '''
-        if not isinstance(id, six.string_types):
-            return TypeError("变量id的类型错误, 应为six.string_types")
-        id_validator = ceph_argparse.CephOsdName()
-        id_validator.valid(id)
+        if not isinstance(id, int):
+            return TypeError("变量id的类型错误, 应为int")
+        id_validator = ceph_argparse.CephInt(range='0')
+        id_validator.valid(str(id))
         if not isinstance(weight, float):
             return TypeError("变量weight的类型错误, 应为float")
         weight_validator = ceph_argparse.CephFloat(range='0|1')
@@ -1416,8 +1408,8 @@ class Ceph():
     
 #实例化Ceph对象
 ceph = Ceph()  
-arg1 = "mgr"
-arg2 = "tier_cache_pool"
+arg1 = "7"
+arg2 = 1.0
 arg3 = 4294967296
 arg4 = "plain"
-print(ceph.auth_export())
+print(ceph.crash_archive(arg1))
