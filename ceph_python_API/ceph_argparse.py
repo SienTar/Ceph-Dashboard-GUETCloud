@@ -476,7 +476,6 @@ class CephChoices(CephArgtype):
     """
     def __init__(self, strings='', **kwargs):
         self.strings = strings.split('|')
-        print(self.strings)
 
     def valid(self, s, partial=False):
         if not partial:
