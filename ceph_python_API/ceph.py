@@ -442,7 +442,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf='')
         return result
     
-    # OSD管理
+    # ceph osd
     def osd_stat(self): # 已完成测试
         '''
         获取OSD的总体情况, 包括数量、up/in/down/out等状态
@@ -1217,7 +1217,62 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
-    # 存储池管理
+    # ceph osd pool
+    def osd_pool_create(self, pool, pg_num, pgp_num, pool_type=None, erasure_code_profile=None, rule=None): # 已完成测试
+        '''
+        创建存储池
+        :param pool: string
+        :param pg_num: CephInt range= 0
+        :param pgp_num: CephInt range= 0
+        :param pool_type: CephChoices strings=(replicated erasure)
+        :param erasure_code_profile: goodchars= [A-Za-z0-9-_.]
+        :param rule: (string)
+        :return: json, (int ret, string outbuf, string outs)
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: Rados引起的问题描述
+        '''
+        cmd = {"prefix": "osd pool create", "format": "json"}
+        
+        if not isinstance(pool, str):
+            return TypeError("变量pool的类型错误, 应为string")
+        cmd['pool'] = pool
+        
+        if not isinstance(pg_num, int):
+            return TypeError("变量pg_num的类型错误, 应为int")
+        pg_num_validator = ceph_argparse.CephInt(range='0')
+        pg_num_validator.valid(str(pg_num))
+        cmd['pg_num'] = pg_num
+        
+        if not isinstance(pgp_num, int):
+            return TypeError("变量pgp_num的类型错误, 应为int")
+        pgp_num_validator = ceph_argparse.CephInt(range='0')
+        pgp_num_validator.valid(str(pgp_num))
+        cmd['pgp_num'] = pgp_num
+        
+        if pool_type is not None:
+            if not isinstance(pool_type, str):
+                return TypeError("变量pool_type的类型错误, 应为string")
+            pool_type_validator = ceph_argparse.CephChoices(strings="replicated|erasure")
+            pool_type_validator.valid(pool_type)
+            cmd['pool_type'] = pool_type
+        
+        if erasure_code_profile is not None:
+            if pool_type is "erasure":
+                if not isinstance(erasure_code_profile, str):
+                    return TypeError("变量erasure_code_profile的类型错误, 应为string")
+                erasure_code_profile_validator = ceph_argparse.CephString(goodchars="A-Za-z0-9-_.")
+                erasure_code_profile_validator.valid(erasure_code_profile)
+                cmd['erasure_code_profile'] = erasure_code_profile
+        
+        if rule is not None:
+            if not isinstance(rule, str):
+                return TypeError("变量rule的类型错误, 应为string")
+            cmd['rule'] = rule
+        
+        result = self.run_ceph_command(cmd, inbuf='')   
+        return result
+    
+    # ceph osd tier
     def osd_tier_add(self, pool, tierpool, force_nonempty=None): # 已完成测试
         '''
         设置Cache Tier
@@ -1377,7 +1432,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
-    # 权限管理
+    # ceph auth
     def auth_export(self, entity=None): # 部分完成测试, entity未测试
         '''
         为组件写入密钥环, 如果未给定, 则写入主密钥环
@@ -1395,6 +1450,23 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf='')   
         return result
     
+    def auth_get(self, entity): # 已完成测试
+        '''
+        获取指定信息
+        :entity: string
+        :return: json, (int ret, string outbuf, string outs)
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: Rados引起的问题描述
+        '''
+        cmd = {"prefix": "auth export", "format": "json"}
+        if not isinstance(entity, str):
+            return TypeError("变量entity的类型错误, 应为string")
+        entity_validator = ceph_argparse.CephString(goodchars="")
+        entity_validator.valid(entity)
+        cmd['entity'] = entity
+        result = self.run_ceph_command(cmd, inbuf='')   
+        return result
+    
     def auth_list(self): # 已完成测试
         '''
         列出身份验证状态
@@ -1408,8 +1480,10 @@ class Ceph():
     
 #实例化Ceph对象
 ceph = Ceph()  
-arg1 = "7"
-arg2 = 1.0
-arg3 = 4294967296
-arg4 = "plain"
-print(ceph.crash_archive(arg1))
+arg1 = "testpool2"
+arg2 = 32
+arg3 = 32
+arg4 = None
+arg5 = None
+arg6 = "replicated_rule_1"
+print(ceph.osd_pool_create(arg1,arg2,arg3,arg4,arg5,arg6))
