@@ -171,6 +171,7 @@ class _RBD():
         '''
         try:
             cmd = ['rbd', 'flatten']
+            
             if not isinstance(pool, str):
                 return TypeError('变量pool的类型错误, 应为str')
             if not isinstance(image, str):
@@ -194,6 +195,7 @@ class _RBD():
         '''
         try:
             cmd = ['rbd', 'info']
+            
             if not isinstance(pool, str):
                 return TypeError('变量pool的类型错误, 应为str')
             if not isinstance(image, str):
@@ -237,16 +239,37 @@ class _RBD():
         finally:
             self._close()
     
-    def map(self, pool, image): # 使用subprocess
+    def map(self, pool, image, host=None, port=22, user='root'): # 使用subprocess
         '''
         挂载RBD镜像
         :param pool (str) -- RADOS存储池名称
         :param image (str) -- RBD镜像名称
+        :param host (str) -- 执行本函数操作的主机名称或IP地址，如为None（默认值）则代表在本机执行；如非None，由于ssh不支持在命令中直接加入登录密码，故请尽可能保证当前主机对远程主机已配置SSH免密登录
+        :param port (int) -- 如指定在远程主机执行，且远程主机的SSH端口号不为默认的22，则启用此参数
+        :param user (str) -- 如指定在远程主机执行，需指定远程主机的用户，默认为'root'
         :return: 执行成功时返回列表[返回值, 输出文本]，返回值为0代表执行成功且无报错，返回值非0代表执行成功但有报错
         :raise Exception: 问题描述
         '''
         try:
-            cmd = ['rbd', 'map']
+            cmd = []
+            
+            if host is not None:
+                if not isinstance(host, str):
+                    return TypeError('变量host的类型错误, 应为str')
+                unreachable = subprocess.Popen(['ping', host, '-c', '4'], stdout = subprocess.PIPE, stderr = subprocess.STDOUT).wait()
+                if unreachable:
+                    return [unreachable.wait(), unreachable.communicate()[0]]
+                cmd.append('ssh')
+                if port != 22:
+                    if not isinstance(port, int):
+                        return TypeError('变量port的类型错误, 应为int')
+                    cmd.append('-p')
+                    cmd.append(str(port))
+                cmd.append(user+'@'+host)
+
+            cmd.append('rbd')
+            cmd.append('map')
+            
             if not isinstance(pool, str):
                 return TypeError('变量pool的类型错误, 应为str')
             if not isinstance(image, str):
@@ -319,6 +342,7 @@ class _RBD():
         '''
         try:
             cmd = ['rbd', 'resize']
+            
             if not isinstance(pool, str):
                 return TypeError('变量pool的类型错误, 应为str')
             if not isinstance(image, str):
@@ -348,14 +372,35 @@ class _RBD():
         finally:
             self._close()
     
-    def showmapped(self): # 使用subprocess
+    def showmapped(self, host=None, port=22, user='root'): # 使用subprocess
         '''
         查看RBD镜像挂载状态
+        :param host (str) -- 执行本函数操作的主机名称或IP地址，如为None（默认值）则代表在本机执行；如非None，由于ssh不支持在命令中直接加入登录密码，故请尽可能保证当前主机对远程主机已配置SSH免密登录
+        :param port (int) -- 如指定在远程主机执行，且远程主机的SSH端口号不为默认的22，则启用此参数
+        :param user (str) -- 如指定在远程主机执行，需指定远程主机的用户，默认为'root'
         :return: 执行成功时返回列表[返回值, 输出文本]，返回值为0代表执行成功且无报错，返回值非0代表执行成功但有报错
         :raise Exception: 问题描述
         '''
         try:
-            cmd = ['rbd', 'showmapped']
+            cmd = []
+            
+            if host is not None:
+                if not isinstance(host, str):
+                    return TypeError('变量host的类型错误, 应为str')
+                unreachable = subprocess.Popen(['ping', host, '-c', '4'], stdout = subprocess.PIPE, stderr = subprocess.STDOUT).wait()
+                if unreachable:
+                    return [unreachable.wait(), unreachable.communicate()[0]]
+                cmd.append('ssh')
+                if port != 22:
+                    if not isinstance(port, int):
+                        return TypeError('变量port的类型错误, 应为int')
+                    cmd.append('-p')
+                    cmd.append(str(port))
+                cmd.append(user+'@'+host)
+
+            cmd.append('rbd')
+            cmd.append('showmapped')
+            
             result = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
             return [result.wait(), result.communicate()[0]]
         except Exception as e:
@@ -570,16 +615,36 @@ class _RBD():
         finally:
             self._close()
     
-    def unmap(self, pool, image): # 使用subprocess
+    def unmap(self, pool, image, host=None, port=22, user='root'): # 使用subprocess
         '''
         卸载RBD镜像
         :param pool (str) -- RADOS存储池名称
         :param image (str) -- RBD镜像名称
+        :param host (str) -- 执行本函数操作的主机名称或IP地址，如为None（默认值）则代表在本机执行；如非None，由于ssh不支持在命令中直接加入登录密码，故请尽可能保证当前主机对远程主机已配置SSH免密登录
+        :param port (int) -- 如指定在远程主机执行，且远程主机的SSH端口号不为默认的22，则启用此参数
+        :param user (str) -- 如指定在远程主机执行，需指定远程主机的用户，默认为'root'
         :return: 执行成功时返回列表[返回值, 输出文本]，返回值为0代表执行成功且无报错，返回值非0代表执行成功但有报错
         :raise Exception: 问题描述
         '''
         try:
-            cmd = ['rbd', 'unmap']
+            cmd = []
+            
+            if host is not None:
+                if not isinstance(host, str):
+                    return TypeError('变量host的类型错误, 应为str')
+                unreachable = subprocess.Popen(['ping', host, '-c', '4'], stdout = subprocess.PIPE, stderr = subprocess.STDOUT).wait()
+                if unreachable:
+                    return [unreachable.wait(), unreachable.communicate()[0]]
+                cmd.append('ssh')
+                if port != 22:
+                    if not isinstance(port, int):
+                        return TypeError('变量port的类型错误, 应为int')
+                    cmd.append('-p')
+                    cmd.append(str(port))
+                cmd.append(user+'@'+host)
+
+            cmd.append('rbd')
+            cmd.append('unmap')
             
             if not isinstance(pool, str):
                 return TypeError('变量pool的类型错误, 应为str')
@@ -602,10 +667,10 @@ if __name__ == '__main__':
     
     arg1 = 'testpool'
     arg2 = 'testrbd2'
-    arg3 = 'snapshot1'
-    arg4 = 'M'
-    arg5 = '--allow-shrink'
-    result = _rbd.snap_unprotect(arg1, arg2, arg3)
+    arg3 = 'ceph-node4'
+    arg4 = ''
+    arg5 = ''
+    result = _rbd.unmap(arg1, arg2, arg3)
     print(result)
     print(type(result))
     
