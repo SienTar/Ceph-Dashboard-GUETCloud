@@ -23,4 +23,4 @@
 ```
 ## 其他事项
 1. `ceph_argparse.py`从Ceph 14.2.22源码`/src/pybind`中提取，当前为官方原版，未进行修改
-2. `ceph.py_untested.py`仅用于记录`ceph.py`的未完成测试项，不可执行，也不可在其他代码中*import*，后续待`ceph.py`测试完成，可能会删除该文件
+2. `ceph.py_unfinished.py`仅用于记录`ceph.py`的未完成测试项，不可执行，也不可在其他代码中*import*，后续待`ceph.py`测试完成，可能会删除该文件
