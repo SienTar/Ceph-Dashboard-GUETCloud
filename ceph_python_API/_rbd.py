@@ -46,7 +46,7 @@ class _RBD():
 
     def clone(self, p_name, p_snapname, c_name): # 在该函数执行前使用_RBD(pool)初始化时, 其输入的pool中的pool[0]、pool[1]分别对应p_ioctx、c_ioctx的存储池
         '''
-        创建RBD镜像
+        克隆RBD镜像
         :param p_ioctx (rados.Ioctx[0]) -- 用于执行RBD镜像操作的上下文, 指定了父RBD镜像所在的RADOS存储池, 该参数已经在_RBD类初始化时创建, 并已本函数中调用, 无相关报错时无需手动干预
         :param p_name (str) -- 父RBD镜像名称
         :param p_snapname (int) -- 父RBD镜像快照名称
