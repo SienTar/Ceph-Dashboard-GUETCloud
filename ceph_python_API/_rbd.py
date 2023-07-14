@@ -4,7 +4,7 @@ import rbd
 import ceph_argparse
 import subprocess
 
-class _RBD():
+class RBD():
 
     def __init__(self, pool):
         try:
@@ -97,7 +97,7 @@ class _RBD():
         finally:
             self._close()
 
-    def feature_disable(self, pool, image, features): # 使用subprocess
+    def feature_disable_subprocess(self, pool, image, features): # 使用subprocess
         '''
         停用RBD镜像的特性
         :param pool (str) -- RADOS存储池名称
@@ -132,7 +132,7 @@ class _RBD():
         finally:
             self._close()
 
-    def feature_enable(self, pool, image, features): # 使用subprocess
+    def feature_enable_subprocess(self, pool, image, features): # 使用subprocess
         '''
         启用RBD镜像的特性
         :param pool (str) -- RADOS存储池名称
@@ -167,7 +167,7 @@ class _RBD():
         finally:
             self._close()
 
-    def flatten(self, pool, image): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def flatten_subprocess(self, pool, image): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
         '''
         挂载RBD镜像
         :param pool (str) -- RADOS存储池名称
@@ -194,7 +194,7 @@ class _RBD():
         finally:
             self._close()
 
-    def info(self, pool, image): # 使用subprocess
+    def info_subprocess(self, pool, image): # 使用subprocess
         '''
         查看RBD镜像信息
         :param pool (str) -- RADOS存储池名称
@@ -251,7 +251,7 @@ class _RBD():
         finally:
             self._close()
 
-    def map(self, pool, image, host = None, port = 22, user = 'root'): # 使用subprocess
+    def map_subprocess(self, pool, image, host = None, port = 22, user = 'root'): # 使用subprocess
         '''
         挂载RBD镜像
         :param pool (str) -- RADOS存储池名称
@@ -344,7 +344,7 @@ class _RBD():
         finally:
             self._close()
 
-    def resize(self, pool, image, size, unit = 'B', allow_shrink = None): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def resize_subprocess(self, pool, image, size, unit = 'B', allow_shrink = None): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
         '''
         调整RBD镜像容量
         :param pool (str) -- RADOS存储池名称
@@ -390,7 +390,7 @@ class _RBD():
         finally:
             self._close()
 
-    def showmapped(self, host = None, port = 22, user = 'root'): # 使用subprocess
+    def showmapped_subprocess(self, host = None, port = 22, user = 'root'): # 使用subprocess
         '''
         查看RBD镜像挂载状态
         :param host (str) -- 执行本函数操作的主机名称或IP地址, 如为None（默认值）则代表在本机执行；如非None, 由于ssh不支持在命令中直接加入登录密码, 故请尽可能保证当前主机对远程主机已配置SSH免密登录
@@ -429,7 +429,7 @@ class _RBD():
         finally:
             self._close()
 
-    def snap_create(self, pool, image, snap): # 使用subprocess
+    def snap_create_subprocess(self, pool, image, snap): # 使用subprocess
         '''
         创建RBD镜像快照
         :param pool (str) -- RADOS存储池名称
@@ -459,7 +459,7 @@ class _RBD():
         finally:
             self._close()
 
-    def snap_ls(self, pool, image): # 使用subprocess
+    def snap_ls_subprocess(self, pool, image): # 使用subprocess
         '''
         列出RBD镜像快照
         :param pool (str) -- RADOS存储池名称
@@ -486,7 +486,7 @@ class _RBD():
         finally:
             self._close()
 
-    def snap_protect(self, pool, image, snap): # 使用subprocess
+    def snap_protect_subprocess(self, pool, image, snap): # 使用subprocess
         '''
         删除RBD镜像快照
         :param pool (str) -- RADOS存储池名称
@@ -516,7 +516,7 @@ class _RBD():
         finally:
             self._close()
 
-    def snap_purge(self, pool, image): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def snap_purge_subprocess(self, pool, image): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
         '''
         删除RBD镜像所有快照
         :param pool (str) -- RADOS存储池名称
@@ -543,7 +543,7 @@ class _RBD():
         finally:
             self._close()
 
-    def snap_rm(self, pool, image, snap): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def snap_rm_subprocess(self, pool, image, snap): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
         '''
         删除RBD镜像快照
         :param pool (str) -- RADOS存储池名称
@@ -573,7 +573,7 @@ class _RBD():
         finally:
             self._close()
 
-    def snap_rollback(self, pool, image, snap): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def snap_rollback_subprocess(self, pool, image, snap): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
         '''
         回滚RBD镜像到指定快照
         :param pool (str) -- RADOS存储池名称
@@ -603,7 +603,7 @@ class _RBD():
         finally:
             self._close()
 
-    def snap_unprotect(self, pool, image, snap): # 使用subprocess
+    def snap_unprotect_subprocess(self, pool, image, snap): # 使用subprocess
         '''
         删除RBD镜像快照
         :param pool (str) -- RADOS存储池名称
@@ -633,7 +633,7 @@ class _RBD():
         finally:
             self._close()
 
-    def status(self, pool, image): # 使用subprocess
+    def status_subprocess(self, pool, image): # 使用subprocess
         '''
         查看RBD镜像状态
         :param pool (str) -- RADOS存储池名称
@@ -660,7 +660,7 @@ class _RBD():
         finally:
             self._close()
 
-    def unmap(self, pool, image, host = None, port = 22, user = 'root'): # 使用subprocess
+    def unmap_subprocess(self, pool, image, host = None, port = 22, user = 'root'): # 使用subprocess
         '''
         卸载RBD镜像
         :param pool (str) -- RADOS存储池名称
@@ -711,13 +711,13 @@ class _RBD():
 if __name__ == '__main__':
 
     pool = ['testpool', 'testpool2'] # 集群内已经存在的存储池名称
-    _rbd = _RBD(pool)
+    _rbd = RBD(pool)
 
     arg1 = 'testpool'
     arg2 = 'testrbd2'
     arg3 = 4
     arg4 = 'G'
     arg5 = '--allow-shrink'
-    result = _rbd.resize(arg1, arg2 ,arg3, arg4, arg5)
+    result = _rbd.resize_subprocess(arg1, arg2 ,arg3, arg4, arg5)
     print(result)
     print(type(result))

@@ -1290,7 +1290,7 @@ class Ceph():
             pool_type_validator.valid(pool_type)
             cmd['pool_type'] = pool_type
 
-            if pool_type is 'erasure':
+            if pool_type == 'erasure':
                 if erasure_code_profile is not None:
                     if not isinstance(erasure_code_profile, str):
                         return TypeError('变量erasure_code_profile的类型错误, 应为str')
@@ -2812,13 +2812,13 @@ if __name__ == '__main__':
 
     ceph = Ceph()
 
-    arg1 = 2
-    arg2 = True
-    arg3 = True
+    arg1 = 'test_ec_pool'
+    arg2 = 32
+    arg3 = 32
     arg4 = 'erasure'
-    arg5 = ['injectargs', '--osd_recovery_sleep', '0']
+    arg5 = 'default'
     arg6 = ['plugin = jerasure', 'k = 4', 'm = 2', 'technique = liber8tion', 'crush-failure-domain = osd']
-    result = ceph.osd_purge_subprocess(arg1, arg2)
+    result = ceph.osd_pool_create(arg1, arg2, arg3, arg4, arg5)
     print(result)
     print(type(result))
     for s in result:
