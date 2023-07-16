@@ -843,7 +843,7 @@ class Ceph():
 
     # ceph osd deep-scrub/repair/scrub
 
-    def osd_deep_scrub(self, who):
+    def osd_deep_scrub(self, who): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于deep以及scrubbing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间
         '''
         深度刷新指定OSD
         :param who: str, OSD名称, 'osd.<id>' 或 '<id>' 均可, <X>为OSD的ID
@@ -860,7 +860,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    def osd_repair(self, who):
+    def osd_repair(self, who): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于repairing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间, 可以体现repair进度或成功的是scrub error以及pg inconsistent的告警数量减少
         '''
         修复指定OSD
         :param who: str, OSD名称, 'osd.<id>' 或 '<id>' 均可, <X>为OSD的ID
@@ -877,7 +877,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    def osd_scrub(self, who):
+    def osd_scrub(self, who): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于scrubbing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间
         '''
         刷新指定OSD
         :param who: str, OSD名称, 'osd.<id>' 或 '<id>' 均可, <X>为OSD的ID
@@ -1405,7 +1405,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    def osd_pool_repair(self, who):
+    def osd_pool_repair(self, who): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于repairing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间, 可以体现repair进度或成功的是scrub error以及pg inconsistent的告警数量减少
         '''
         修改存储池名称
         :param who: list, 元素为str, 满足CephPoolname, 允许多个, 有效输入范围为1个或多个存储池名称
@@ -2255,7 +2255,7 @@ class Ceph():
 
     # ceph pg deep-scrub/repair/scrub
 
-    def pg_deep_scrub(self, pgid):
+    def pg_deep_scrub(self, pgid): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于deep以及scrubbing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间
         '''
         深度刷新某个PG
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID
@@ -2274,7 +2274,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    def pg_repair(self, pgid):
+    def pg_repair(self, pgid): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于repairing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间, 可以体现repair进度或成功的是scrub error以及pg inconsistent的告警数量减少
         '''
         修复某个PG
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID
@@ -2293,7 +2293,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    def pg_scrub(self, pgid):
+    def pg_scrub(self, pgid): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于scrubbing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间
         '''
         刷新某个PG
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID
@@ -2558,7 +2558,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    def pg_repeer(self, pgid):
+    def pg_repeer(self, pgid): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于repeering状态, 无法查询进度, 该操作的完成时间一般很短
         '''
         repeer某个PG
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID

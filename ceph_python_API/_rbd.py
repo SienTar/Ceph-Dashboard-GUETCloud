@@ -167,9 +167,9 @@ class RBD():
         finally:
             self._close()
 
-    def flatten_subprocess(self, pool, image): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def flatten_subprocess(self, pool, image): # 使用subprocess, 异步操作: 该函数的输出有进度显示, 但只在完全完成后输出, 该操作的完成时间随RBD的容量和数据量而变化, 可能需要执行很长时间
         '''
-        挂载RBD镜像
+        合并父镜像信息, 使克隆后的RBD镜像独立存在, 不再依赖原有的父镜像
         :param pool (str) -- RADOS存储池名称
         :param image (str) -- RBD镜像名称
         :return: 执行成功时返回列表[返回值, 输出文本], 返回值为0代表执行成功且无报错, 返回值非0代表执行成功但有报错
@@ -344,7 +344,7 @@ class RBD():
         finally:
             self._close()
 
-    def resize_subprocess(self, pool, image, size, unit = 'B', allow_shrink = None): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def resize_subprocess(self, pool, image, size, unit = 'B', allow_shrink = None): # 使用subprocess, 异步操作: 该函数的输出有进度显示, 但只在完全完成后输出, 该操作的完成时间随调整的容量变化量而变化, 可能需要执行很长时间
         '''
         调整RBD镜像容量
         :param pool (str) -- RADOS存储池名称
@@ -516,7 +516,7 @@ class RBD():
         finally:
             self._close()
 
-    def snap_purge_subprocess(self, pool, image): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def snap_purge_subprocess(self, pool, image): # 使用subprocess, 异步操作: 该函数的输出有进度显示, 但只在完全完成后输出, 该操作的完成时间随RBD的容量和数据量而变化, 可能需要执行很长时间
         '''
         删除RBD镜像所有快照
         :param pool (str) -- RADOS存储池名称
@@ -543,7 +543,7 @@ class RBD():
         finally:
             self._close()
 
-    def snap_rm_subprocess(self, pool, image, snap): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def snap_rm_subprocess(self, pool, image, snap): # 使用subprocess, 异步操作: 该函数的输出有进度显示, 但只在完全完成后输出, 该操作的完成时间随RBD的容量和数据量而变化, 可能需要执行很长时间
         '''
         删除RBD镜像快照
         :param pool (str) -- RADOS存储池名称
@@ -573,7 +573,7 @@ class RBD():
         finally:
             self._close()
 
-    def snap_rollback_subprocess(self, pool, image, snap): # 使用subprocess, 该函数的输出有进度显示, 可能会处理较长时间
+    def snap_rollback_subprocess(self, pool, image, snap): # 使用subprocess, 异步操作: 该函数的输出有进度显示, 但只在完全完成后输出, 该操作的完成时间随RBD的容量和数据量而变化, 可能需要执行很长时间
         '''
         回滚RBD镜像到指定快照
         :param pool (str) -- RADOS存储池名称
