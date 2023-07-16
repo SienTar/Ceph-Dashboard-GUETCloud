@@ -49,7 +49,7 @@ class RBD():
         克隆RBD镜像
         :param p_ioctx (rados.Ioctx[0]) -- 用于执行RBD镜像操作的上下文, 指定了父RBD镜像所在的RADOS存储池, 该参数已经在_RBD类初始化时创建, 并已本函数中调用, 无相关报错时无需手动干预
         :param p_name (str) -- 父RBD镜像名称
-        :param p_snapname (int) -- 父RBD镜像快照名称
+        :param p_snapname (str) -- 父RBD镜像快照名称
         :param c_ioctx (rados.Ioctx[1]) -- 用于执行RBD镜像操作的上下文, 指定了子RBD镜像所在的RADOS存储池, 该参数已经在_RBD类初始化时创建, 并已本函数中调用, 无相关报错时无需手动干预
         :param c_name (str) -- 子RBD镜像名称
         :return: 执行成功时返回列表[0, None]

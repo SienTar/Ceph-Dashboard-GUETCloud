@@ -344,7 +344,7 @@ class Ceph():
 
     def crash_info(self, id): # 部分完成测试, 因暂时没有可用的崩溃信息ID, 目前为止无法测出返回值为0的结果
         '''
-        查看某个崩溃信息
+        查看指定崩溃信息
         :param id: str, 崩溃信息ID, 如 '2022-04-22T00:53:30.164344Z_ce493a00-60bf-4114-bb47-6246ebaa4237'
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -361,7 +361,7 @@ class Ceph():
 
     def crash_archive(self, id): # 部分完成测试, 因暂时没有可用的崩溃信息ID, 目前为止无法测出返回值为0的结果
         '''
-        将某一个崩溃守护进程crash信息进行存档
+        将指定崩溃守护进程crash信息进行存档
         :param id: str, 崩溃信息ID, 如 '2022-04-22T00:53:30.164344Z_ce493a00-60bf-4114-bb47-6246ebaa4237'
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -422,12 +422,109 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
+    # ceph osd crush class
+
+    def osd_crush_class_create(self, _class):
+        '''
+        创建OSD等级
+        :param _class: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), OSD等级
+        :return: tuple, (int ret, str outbuf, str outs), json格式
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: RADOS引起的问题描述
+        '''
+        cmd = {'prefix': 'osd crush class create', 'format': 'json'}
+
+        if not isinstance(_class, str):
+           return TypeError('变量_class的类型错误, 应为str')
+        class_validator = ceph_argparse.CephString(goodchars = '[A-Za-z0-9-_.]')
+        class_validator.valid(_class)
+        cmd['class'] = _class
+
+        result = self.run_ceph_command(cmd, inbuf = '')
+        return result
+
+    def osd_crush_class_ls(self):
+        '''
+        获取OSD等级列表
+        :return: tuple, (int ret, str outbuf, str outs), json格式
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: RADOS引起的问题描述
+        '''
+        cmd = {'prefix': 'osd crush class ls', 'format': 'json'}
+
+        result = self.run_ceph_command(cmd, inbuf = '')
+        return result
+
+    def osd_crush_class_ls_osd(self, _class):
+        '''
+        获取OSD等级对应的OSD列表
+        :param _class: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), OSD等级
+        :return: tuple, (int ret, str outbuf, str outs), json格式
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: RADOS引起的问题描述
+        '''
+        cmd = {'prefix': 'osd crush class ls-osd', 'format': 'json'}
+
+        if not isinstance(_class, str):
+           return TypeError('变量_class的类型错误, 应为str')
+        class_validator = ceph_argparse.CephString(goodchars = '[A-Za-z0-9-_.]')
+        class_validator.valid(_class)
+        cmd['class'] = _class
+
+        result = self.run_ceph_command(cmd, inbuf = '')
+        return result
+
+    def osd_crush_class_rename(self, srcname, dstname):
+        '''
+        修改OSD等级名称
+        :param srcname: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), 原名称
+        :param dstname: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), 目标名称
+        :return: tuple, (int ret, str outbuf, str outs), json格式
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: RADOS引起的问题描述
+        '''
+        cmd = {'prefix': 'osd crush class rename', 'format': 'json'}
+
+        if not isinstance(srcname, str):
+            return TypeError('变量srcname的类型错误, 应为str')
+        srcname_validator = ceph_argparse.CephString(goodchars = '[A-Za-z0-9-_.]')
+        srcname_validator.valid(srcname)
+        cmd['srcname'] = srcname
+
+        if not isinstance(dstname, str):
+            return TypeError('变量dstname的类型错误, 应为str')
+        dstname_validator = ceph_argparse.CephString(goodchars = '[A-Za-z0-9-_.]')
+        dstname_validator.valid(dstname)
+        cmd['dstname'] = dstname
+
+        result = self.run_ceph_command(cmd, inbuf = '')
+        return result
+
+    def osd_crush_class_rm(self, _class):
+        '''
+        删除OSD等级
+        :param _class: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), OSD等级
+        :return: tuple, (int ret, str outbuf, str outs), json格式
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: RADOS引起的问题描述
+        '''
+        cmd = {'prefix': 'osd crush class rm', 'format': 'json'}
+
+        if not isinstance(_class, str):
+           return TypeError('变量_class的类型错误, 应为str')
+        class_validator = ceph_argparse.CephString(goodchars = '[A-Za-z0-9-_.]')
+        class_validator.valid(_class)
+        cmd['class'] = _class
+
+        result = self.run_ceph_command(cmd, inbuf = '')
+        return result
+
     # ceph osd crush get-device-class/rm-device-class/set-device-class
 
     def osd_crush_get_device_class(self, ids):
         '''
         获取OSD等级
-        :param ids: list, 允许多个, 元素为str, 有效输入范围为1个或多个OSD的ID, 或者 = ['all'], ['any']
+        :param ids: list, 允许多个, 元素为str, 满足CephOsdName(), 有效输入范围为1个或多个OSD的名称, 格式为 '<id>' 或 'osd.<id>', 或者 = ['all'], ['any']
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -436,9 +533,11 @@ class Ceph():
 
         if not isinstance(ids, list):
             return TypeError('变量ids的类型错误, 应为list')
+        ids_validator = ceph_argparse.CephOsdName()
         for s in ids:
             if not isinstance(s, str):
                 return TypeError('变量ids的元素类型错误, 应为str')
+            ids_validator.valid(s)
         cmd['ids'] = ids
 
         result = self.run_ceph_command(cmd, inbuf = '')
@@ -447,7 +546,7 @@ class Ceph():
     def osd_crush_rm_device_class(self, ids):
         '''
         删除OSD等级
-        :param ids: list, 允许多个, 元素为str, 有效输入范围为1个或多个OSD的ID, 或者 = ['all'], ['any']
+        :param ids: list, 允许多个, 元素为str, 满足CephOsdName(), 有效输入范围为1个或多个OSD的名称, 格式为 '<id>' 或 'osd.<id>', 或者 = ['all'], ['any']
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -456,9 +555,11 @@ class Ceph():
 
         if not isinstance(ids, list):
             return TypeError('变量ids的类型错误, 应为list')
+        ids_validator = ceph_argparse.CephOsdName()
         for s in ids:
             if not isinstance(s, str):
                 return TypeError('变量ids的元素类型错误, 应为str')
+            ids_validator.valid(s)
         cmd['ids'] = ids
 
         result = self.run_ceph_command(cmd, inbuf = '')
@@ -467,8 +568,8 @@ class Ceph():
     def osd_crush_set_device_class(self, _class, ids):
         '''
         设置OSD等级
-        :param class: (string)
-        :param ids: list, 允许多个, 元素为str, 有效输入范围为1个或多个OSD的ID, 或者 = ['all'], ['any']
+        :param _class: str，OSD等级
+        :param ids: list, 允许多个, 元素为str, 满足CephOsdName(), 有效输入范围为1个或多个OSD的名称, 格式为 '<id>' 或 'osd.<id>', 或者 = ['all'], ['any']
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -481,9 +582,11 @@ class Ceph():
 
         if not isinstance(ids, list):
             return TypeError('变量ids的类型错误, 应为list')
+        ids_validator = ceph_argparse.CephOsdName()
         for s in ids:
             if not isinstance(s, str):
                 return TypeError('变量ids的元素类型错误, 应为str')
+            ids_validator.valid(s)
         cmd['ids'] = ids
 
         result = self.run_ceph_command(cmd, inbuf = '')
@@ -497,7 +600,7 @@ class Ceph():
         :param name: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), CRUSH规则名称
         :param root: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), CRUSH规则的根节点
         :param type: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), CRUSH规则的故障域类型
-        :param class: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), CRUSH规则限定分布的OSD等级, 可选参数, 不指定时默认忽略OSD等级
+        :param _class: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), CRUSH规则限定分布的OSD等级, 可选参数, 不指定时默认忽略OSD等级
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -579,7 +682,7 @@ class Ceph():
     def osd_crush_rule_ls_by_class(self, _class):
         '''
         获取指定OSD等级的CRUSH规则列表
-        :param class: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), OSD等级
+        :param _class: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), OSD等级
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -597,7 +700,7 @@ class Ceph():
 
     def osd_crush_rule_rename(self, srcname, dstname):
         '''
-        重命名CRUSH规则
+        修改CRUSH规则名称
         :param srcname: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), 原名称
         :param dstname: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), 目标名称
         :return: tuple, (int ret, str outbuf, str outs), json格式
@@ -680,7 +783,7 @@ class Ceph():
 
     def osd_crush_ls(self, node):
         '''
-        获取CRUSH树中某个节点的下一级子节点列表
+        获取CRUSH树中指定节点的下一级子节点列表
         :param node: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), 节点名称
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -726,7 +829,7 @@ class Ceph():
 
     def osd_crush_rename_bucket(self, srcname, dstname):
         '''
-        重命名bucket
+        修改bucket名称
         :param srcname: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), 原名称
         :param dstname: str, 满足CephString(goodchars = '[A-Za-z0-9-_.]'), 目标名称
         :return: tuple, (int ret, str outbuf, str outs), json格式
@@ -899,7 +1002,7 @@ class Ceph():
     def osd_down(self, ids):
         '''
         设置OSD down
-        :param ids: list, 允许多个, 元素为str, 有效输入范围为1个或多个OSD的ID, 或者 = ['all'], ['any']
+        :param ids: list, 允许多个, 元素为str, 满足CephOsdName(), 有效输入范围为1个或多个OSD的名称, 格式为 '<id>' 或 'osd.<id>', 或者 = ['all'], ['any']
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -908,9 +1011,11 @@ class Ceph():
 
         if not isinstance(ids, list):
             return TypeError('变量ids的类型错误, 应为list')
+        ids_validator = ceph_argparse.CephOsdName()
         for s in ids:
             if not isinstance(s, str):
                 return TypeError('变量ids的元素类型错误, 应为str')
+            ids_validator.valid(s)
         cmd['ids'] = ids
 
         result = self.run_ceph_command(cmd, inbuf = '')
@@ -919,7 +1024,7 @@ class Ceph():
     def osd_in(self, ids):
         '''
         设置OSD in
-        :param ids: list, 允许多个, 元素为str, 有效输入范围为1个或多个OSD的ID, 或者 = ['all'], ['any']
+        :param ids: list, 允许多个, 元素为str, 满足CephOsdName(), 有效输入范围为1个或多个OSD的名称, 格式为 '<id>' 或 'osd.<id>', 或者 = ['all'], ['any']
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -928,9 +1033,11 @@ class Ceph():
 
         if not isinstance(ids, list):
             return TypeError('变量ids的类型错误, 应为list')
+        ids_validator = ceph_argparse.CephOsdName()
         for s in ids:
             if not isinstance(s, str):
                 return TypeError('变量ids的元素类型错误, 应为str')
+            ids_validator.valid(s)
         cmd['ids'] = ids
 
         result = self.run_ceph_command(cmd, inbuf = '')
@@ -939,7 +1046,7 @@ class Ceph():
     def osd_out(self, ids):
         '''
         设置OSD out
-        :param ids: list, 允许多个, 元素为str, 有效输入范围为1个或多个OSD的ID, 或者 = ['all'], ['any']
+        :param ids: list, 允许多个, 元素为str, 满足CephOsdName(), 有效输入范围为1个或多个OSD的名称, 格式为 '<id>' 或 'osd.<id>', 或者 = ['all'], ['any']
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -948,9 +1055,11 @@ class Ceph():
 
         if not isinstance(ids, list):
             return TypeError('变量ids的类型错误, 应为list')
+        ids_validator = ceph_argparse.CephOsdName()
         for s in ids:
             if not isinstance(s, str):
                 return TypeError('变量ids的元素类型错误, 应为str')
+            ids_validator.valid(s)
         cmd['ids'] = ids
 
         result = self.run_ceph_command(cmd, inbuf = '')
@@ -990,7 +1099,7 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
         '''
-        cmd = {"prefix": "osd erasure-code-profile get", "format": "json"}
+        cmd = {'prefix': 'osd erasure-code-profile get', 'format': 'json'}
 
         if not isinstance(name, str):
             return TypeError('变量name的类型错误, 应为str')
@@ -1008,7 +1117,7 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
         '''
-        cmd = {"prefix": "osd erasure-code-profile ls", "format": "json"}
+        cmd = {'prefix': 'osd erasure-code-profile ls', 'format': 'json'}
 
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
@@ -1021,7 +1130,7 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
         '''
-        cmd = {"prefix": "osd erasure-code-profile rm", "format": "json"}
+        cmd = {'prefix': 'osd erasure-code-profile rm', 'format': 'json'}
 
         if not isinstance(name, str):
             return TypeError('变量name的类型错误, 应为str')
@@ -1056,7 +1165,7 @@ class Ceph():
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
         '''
-        cmd = {"prefix": "osd erasure-code-profile set", "format": "json"}
+        cmd = {'prefix': 'osd erasure-code-profile set', 'format': 'json'}
 
         if not isinstance(name, str):
             return TypeError('变量name的类型错误, 应为str')
@@ -1195,7 +1304,7 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    # ceph osd pool
+    # ceph osd pool application
 
     def osd_pool_application_disable(self, pool, app, yes_i_really_mean_it = False):
         '''
@@ -1250,6 +1359,64 @@ class Ceph():
 
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
+
+    # ceph osd pool deep-scrub/repair/scrub
+
+    def osd_pool_deep_scrub(self, who): # 仅提交操作, 且不返回文本提示, 可在集群状态或PG状态中查看哪些PG处于deep以及scrubbing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间
+        '''
+        深度刷新指定存储池
+        :param who: list, 元素为str, 满足CephPoolname, 允许多个, 有效输入范围为1个或多个存储池名称
+        :return: tuple, (int ret, str outbuf, str outs), json格式
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: RADOS引起的问题描述
+        '''
+        cmd = {'prefix': 'osd pool deep-scrub', 'format': 'json'}
+
+        for s in who:
+            if not isinstance(s, str):
+                return TypeError('变量who的元素类型错误, 应为str')
+        cmd['who'] = who
+
+        result = self.run_ceph_command(cmd, inbuf = '')
+        return result
+
+    def osd_pool_repair(self, who): # 仅提交操作, 且不返回文本提示, 可在集群状态或PG状态中查看哪些PG处于repairing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间, 可以体现repair进度或成功的是scrub error以及pg inconsistent的告警数量减少
+        '''
+        修复指定存储池
+        :param who: list, 元素为str, 满足CephPoolname, 允许多个, 有效输入范围为1个或多个存储池名称
+        :return: tuple, (int ret, str outbuf, str outs), json格式
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: RADOS引起的问题描述
+        '''
+        cmd = {'prefix': 'osd pool repair', 'format': 'json'}
+
+        for s in who:
+            if not isinstance(s, str):
+                return TypeError('变量who的元素类型错误, 应为str')
+        cmd['who'] = who
+
+        result = self.run_ceph_command(cmd, inbuf = '')
+        return result
+
+    def osd_pool_scrub(self, who): # 仅提交操作, 且不返回文本提示, 可在集群状态或PG状态中查看哪些PG处于scrubbing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间
+        '''
+        刷新指定存储池
+        :param who: list, 元素为str, 满足CephPoolname, 允许多个, 有效输入范围为1个或多个存储池名称
+        :return: tuple, (int ret, str outbuf, str outs), json格式
+        :raise CephError: 执行错误时引发CephError
+        :raise rados.Error: RADOS引起的问题描述
+        '''
+        cmd = {'prefix': 'osd pool scrub', 'format': 'json'}
+
+        for s in who:
+            if not isinstance(s, str):
+                return TypeError('变量who的元素类型错误, 应为str')
+        cmd['who'] = who
+
+        result = self.run_ceph_command(cmd, inbuf = '')
+        return result
+
+    # ceph osd pool others
 
     def osd_pool_create(self, pool, pg_num, pgp_num, pool_type = None, erasure_code_profile = None, rule = None):
         '''
@@ -1405,24 +1572,6 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    def osd_pool_repair(self, who): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于repairing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间, 可以体现repair进度或成功的是scrub error以及pg inconsistent的告警数量减少
-        '''
-        修改存储池名称
-        :param who: list, 元素为str, 满足CephPoolname, 允许多个, 有效输入范围为1个或多个存储池名称
-        :return: tuple, (int ret, str outbuf, str outs), json格式
-        :raise CephError: 执行错误时引发CephError
-        :raise rados.Error: RADOS引起的问题描述
-        '''
-        cmd = {'prefix': 'osd pool repair', 'format': 'json'}
-
-        for s in who:
-            if not isinstance(s, str):
-                return TypeError('变量who的元素类型错误, 应为str')
-        cmd['who'] = who
-
-        result = self.run_ceph_command(cmd, inbuf = '')
-        return result
-
     def osd_pool_rm(self, pool, pool2 = None, yes_i_really_really_mean_it = False):
         '''
         删除存储池
@@ -1532,7 +1681,7 @@ class Ceph():
 
     def osd_reweight_by_pg(self, oload = None, max_change = None, max_osds = None, pools = None):
         '''
-        根据PG调整OSD的reweight值
+        根据PG数调整OSD的reweight值
         :param oload: int, 满足CephInt(range = '100')且不可取等号, 与平均负载的百分比值, 不指定时默认为120
         :param max_change: float, 满足CephFloat(range = '0.0')且不可取等号, 每个OSD的reweight值的最大调整量, 不指定时默认为0.05
         :param max_osds: int, 满足CephInt(range = '0')且不可取等号, 单次最多调整的OSD数量, 不指定时默认为4
@@ -1988,7 +2137,7 @@ class Ceph():
 
     def osd_dump(self, epoch = None):
         '''
-        获取OSD的总体情况, 如命令ceph osd dump
+        获取OSD的总体情况
         :param epoch: int, 满足CephInt(range = '0'), 版本号, 不指定时默认为最新版本
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -2056,7 +2205,7 @@ class Ceph():
 
     def osd_metadata(self, id = None):
         '''
-        获取指定OSD ID的元数据信息 (默认全部OSD)
+        获取OSD的元数据信息 (默认全部OSD)
         :param id: int, 满足CephOsdName, 实际满足CephInt(range = '0'), OSD的ID, 不指定时默认作用于所有OSD
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -2115,7 +2264,7 @@ class Ceph():
     def osd_purge(self, id, force = False, yes_i_really_mean_it = False): # 未完成测试, Ceph无法识别id参数, 整型、字符串、整型列表和字符串列表均无法识别
         '''
         彻底删除OSD (等价于依次执行了 "ceph osd crush remove"、"ceph auth del" 和 "ceph osd rm")
-        :param id: int, 满足CephOsdName, 实际满足CephInt(range = '0'), OSD的ID
+        :param id: str, 满足CephOsdName(), OSD的名称, 格式为 '<id>' 或 'osd.<id>'
         :param force: bool, 满足CephBool(strings = ''), 用于强制操作, 不指定时默认为False以防止敏感操作被误触发
         :param yes_i_really_mean_it: bool, 满足CephBool(strings = ''), 用于确认敏感操作, 不指定时默认为False以防止敏感操作被误触发
         :return: tuple, (int ret, str outbuf, str outs), json格式
@@ -2124,11 +2273,11 @@ class Ceph():
         '''
         cmd = {'prefix': 'osd purge', 'format': 'json'}
 
-        if not isinstance(id, int):
-            return TypeError('变量id的类型错误, 应为int')
-        id_validator = ceph_argparse.CephInt(range = '0')
-        id_validator.valid(str(id))
-        cmd['id'] = id
+        if not isinstance(id, str):
+            return TypeError('变量id的类型错误, 应为str')
+        id_validator = ceph_argparse.CephOsdName()
+        id_validator.valid(id)
+        cmd['id'] = id # 为啥OSD是要大写才行？？？？OMG！
 
         if force is not False:
             if not isinstance(force, bool):
@@ -2150,7 +2299,7 @@ class Ceph():
     def osd_purge_subprocess(self, id, force = False, yes_i_really_mean_it = False): # 使用subprocess
         '''
         彻底删除OSD (等价于依次执行了 "ceph osd crush remove"、"ceph auth del" 和 "ceph osd rm")
-        :param id: int, 满足CephOsdName, 实际满足CephInt(range = '0'), OSD的ID
+        :param id: str, 满足CephOsdName(), OSD的名称, 格式为 '<id>' 或 'osd.<id>'
         :param force: bool, 满足CephBool(strings = ''), 用于强制操作, 不指定时默认为False以防止敏感操作被误触发
         :param yes_i_really_mean_it: bool, 满足CephBool(strings = ''), 用于确认敏感操作, 不指定时默认为False以防止敏感操作被误触发
         :return: 执行成功时返回列表[返回值, 输出文本], 返回值为0代表执行成功且无报错, 返回值非0代表执行成功但有报错
@@ -2159,11 +2308,11 @@ class Ceph():
         try:
             cmd = ['ceph', 'osd', 'purge']
 
-            if not isinstance(id, int):
-                return TypeError('变量id的类型错误, 应为int')
-            id_validator = ceph_argparse.CephInt(range = '0')
-            id_validator.valid(str(id))
-            cmd.append(str(id))
+            if not isinstance(id, str):
+                return TypeError('变量id的类型错误, 应为str')
+            id_validator = ceph_argparse.CephOsdName()
+            id_validator.valid(id)
+            cmd.append(id)
 
             if force is not False:
                 if not isinstance(force, bool):
@@ -2171,7 +2320,7 @@ class Ceph():
                 force_validator = ceph_argparse.CephBool(strings = '')
                 force_validator.valid(str(force))
                 cmd.append('--force')
-		    
+
             if yes_i_really_mean_it is not False:
                 if not isinstance(yes_i_really_mean_it, bool):
                     return TypeError('变量yes_i_really_mean_it的类型错误, 应为bool')
@@ -2192,7 +2341,7 @@ class Ceph():
     def osd_rm(self, ids):
         '''
         删除OSD
-        :param ids: list, 允许多个, 元素为str, 有效输入范围为1个或多个OSD的ID, 或者 = ['all'], ['any']
+        :param ids: list, 允许多个, 元素为str, 满足CephOsdName(), 有效输入范围为1个或多个OSD的名称, 格式为 '<id>' 或 'osd.<id>', 或者 = ['all'], ['any']
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -2201,9 +2350,11 @@ class Ceph():
 
         if not isinstance(ids, list):
             return TypeError('变量ids的类型错误, 应为list')
+        ids_validator = ceph_argparse.CephOsdName()
         for s in ids:
             if not isinstance(s, str):
                 return TypeError('变量ids的元素类型错误, 应为str')
+            ids_validator.valid(s)
         cmd['ids'] = ids
 
         result = self.run_ceph_command(cmd, inbuf = '')
@@ -2211,7 +2362,7 @@ class Ceph():
 
     def osd_stat(self):
         '''
-        获取OSD的总体情况, 包括数量和up/in/down/out等状态
+        获取OSD的状态信息, 包括数量和up/in/down/out等状态
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -2257,7 +2408,7 @@ class Ceph():
 
     def pg_deep_scrub(self, pgid): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于deep以及scrubbing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间
         '''
-        深度刷新某个PG
+        深度刷新指定PG
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -2276,7 +2427,7 @@ class Ceph():
 
     def pg_repair(self, pgid): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于repairing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间, 可以体现repair进度或成功的是scrub error以及pg inconsistent的告警数量减少
         '''
-        修复某个PG
+        修复指定PG
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -2295,7 +2446,7 @@ class Ceph():
 
     def pg_scrub(self, pgid): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于scrubbing状态, 无法查询进度, 该操作的完成时间随操作对象的数据量变化, 可能需要执行很长时间
         '''
-        刷新某个PG
+        刷新指定PG
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -2360,7 +2511,7 @@ class Ceph():
 
     def pg_dump_pools_json(self):
         '''
-        获取PG map中与池有关的部分, 以json显示
+        获取PG map中与存储池有关的部分, 以json显示
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
         :raise rados.Error: RADOS引起的问题描述
@@ -2426,7 +2577,7 @@ class Ceph():
 
     def pg_ls_by_osd(self, osd, pool = None, states = None): # 部分完成测试, osd参数不起作用, 输出均为所有OSD的池
         '''
-        列出某个OSD的PG信息
+        列出指定OSD的PG信息
         :param osd: str, 满足CephOsdName(), OSD名称
         :param pool: int, 满足CephInt(range = ''), 存储池ID, 不指定时默认作用于所有存储池
         :param states: list, 允许多个, 满足CephChoices(strings = 'stale|creating|active|activating|clean|recovery_wait|recovery_toofull|recovering|forced_recovery|down|recovery_unfound|backfill_unfound|undersized|degraded|remapped|premerge|scrubbing|deep|inconsistent|peering|repair|backfill_wait|backfilling|forced_backfill|backfill_toofull|incomplete|peered|snaptrim|snaptrim_wait|snaptrim_error')
@@ -2463,7 +2614,7 @@ class Ceph():
 
     def pg_ls_by_pool(self, poolstr, states = None):
         '''
-        列出某个池的PG信息
+        列出指定存储池的PG信息
         :param poolstr: str, 存储池名称
         :param states: list, 允许多个, 满足CephChoices(strings = 'stale|creating|active|activating|clean|recovery_wait|recovery_toofull|recovering|forced_recovery|down|recovery_unfound|backfill_unfound|undersized|degraded|remapped|premerge|scrubbing|deep|inconsistent|peering|repair|backfill_wait|backfilling|forced_backfill|backfill_toofull|incomplete|peered|snaptrim|snaptrim_wait|snaptrim_error')
             指定状态, 不指定时默认作用于所有状态
@@ -2490,8 +2641,8 @@ class Ceph():
 
     def pg_ls_by_primary(self, osd, pool = None, states = None): # 部分完成测试, osd参数不起作用, 输出均为所有OSD的池
         '''
-        列出某个primary OSD的PG
-        :param osd: str, 满足CephOsdName(), OSD名称
+        列出指定primary OSD的PG
+        :param osd: str, 满足CephOsdName(), OSD的名称, 格式为 '<id>' 或 'osd.<id>'
         :param pool: int, 满足CephInt(range = ''), 存储池ID, 不指定时默认作用于所有存储池
         :param states: list, 允许多个, 满足CephChoices(strings = 'stale|creating|active|activating|clean|recovery_wait|recovery_toofull|recovering|forced_recovery|down|recovery_unfound|backfill_unfound|undersized|degraded|remapped|premerge|scrubbing|deep|inconsistent|peering|repair|backfill_wait|backfilling|forced_backfill|backfill_toofull|incomplete|peered|snaptrim|snaptrim_wait|snaptrim_error')
             指定状态, 不指定时默认作用于所有状态
@@ -2541,7 +2692,7 @@ class Ceph():
 
     def pg_map(self, pgid):
         '''
-        获取某个PG的OSD映射
+        获取指定PG的OSD映射
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -2558,9 +2709,9 @@ class Ceph():
         result = self.run_ceph_command(cmd, inbuf = '')
         return result
 
-    def pg_repeer(self, pgid): # 返回内容仅为提交操作的提示, 可在集群状态或PG状态中查看哪些PG处于repeering状态, 无法查询进度, 该操作的完成时间一般很短
+    def pg_repeer(self, pgid): # 仅提交操作, 且不返回文本提示, 可在集群状态或PG状态中查看哪些PG处于repeering状态, 无法查询进度, 该操作的完成时间一般很短
         '''
-        repeer某个PG
+        repeer指定PG
         :param pgid: str, 满足CephPgid(), PG的ID, 格式为 'X.Y', 其中X为存储池的ID, Y为PG在存储池内的ID
         :return: tuple, (int ret, str outbuf, str outs), json格式
         :raise CephError: 执行错误时引发CephError
@@ -2812,13 +2963,13 @@ if __name__ == '__main__':
 
     ceph = Ceph()
 
-    arg1 = 'test_ec_pool'
-    arg2 = 32
+    arg1 = 'hdd'
+    arg2 = 'ssd1'
     arg3 = 32
     arg4 = 'erasure'
     arg5 = 'default'
     arg6 = ['plugin = jerasure', 'k = 4', 'm = 2', 'technique = liber8tion', 'crush-failure-domain = osd']
-    result = ceph.osd_pool_create(arg1, arg2, arg3, arg4, arg5)
+    result = ceph.osd_crush_class_ls_osd(arg1)
     print(result)
     print(type(result))
     for s in result:
