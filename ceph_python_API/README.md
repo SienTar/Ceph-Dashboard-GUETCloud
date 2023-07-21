@@ -10,7 +10,7 @@
 [root@localhost ~]# cd /root/ceph_python_API
 
 # 执行脚本
-[root@localhost ceph_python_API]# python _ceph.py
+[root@localhost ~/ceph_python_API]# python _ceph.py
 ```
 ### 测试`_rbd.py`
 - 测试方法同`_ceph.py`
