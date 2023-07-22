@@ -350,7 +350,7 @@ class RBD():
         :param pool (str) -- RADOS存储池名称
         :param image (str) -- RBD镜像名称
         :param size (int) -- 调整后的RBD镜像容量（注意, 不是变化量, 是目标量)
-        :param size (str) -- 容量单位, 只接受大写, 满足CephChoices(strings = 'B|K|M|G|T|P|E'), 不指定时默认为 'B'
+        :param unit (str) -- 容量单位, 只接受大写, 满足CephChoices(strings = 'B|K|M|G|T|P|E'), 不指定时默认为 'B'
         :param allow_shrink (str) -- 允许缩容, 满足CephChoices(strings = '--allow-shrink')
         :return: 执行成功时返回列表[返回值, 输出文本], 返回值为0代表执行成功且无报错, 返回值非0代表执行成功但有报错
         :raise Exception: 问题描述
